@@ -1,25 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-
 let messages = ['Привет', 'Как дела?'];
 
-const MessageComponent = (props) => <div>{props.text}</div>;
-const MessageButton = (props) => <button onClick={handleClick}>Norm</button>;
+const handleClick = () => {
+    messages.push('Нормально');
+    ReactDOM.render(
+        <MessageField messages={ messages } />,
+        document.getElementById('root'),
+    );
+};
+
+const MessageComponent = (props) => <div>{ props.text }</div>;
+
 const MessageField = (props) => {
-   return props.messages.map(message => <MessageComponent text={ message } />);
+   const messageElemnts = props.messages.map(message => <MessageComponent text={ message } />);
+   return (
+       <div>
+           <h1>React Chat</h1>
+           { messageElemnts }
+           <button onClick={ handleClick }>Отправить сообщение</button>
+       </div>
+   )
 };
 
 ReactDOM.render(
-   <div>
-      <MessageField messages={ messages } />
-      <MessageButton/>
-   </div>,
+   <MessageField messages={ messages } />,
    document.getElementById('root'),
 );
-const handleClick = () => {
-   
-   messages.push('Norm');
-   ReactDOM.render();
-   };
-   
