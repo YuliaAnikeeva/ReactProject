@@ -17,8 +17,9 @@ export default class MessageField extends React.Component {
        this.textInput.current.focus();
    }
 
-   componentDidUpdate() {
-       if (this.state.messages[this.state.messages.length - 1].sender === 'me') {
+   componentDidUpdate(prevProps, prevState) {
+       if (prevState.messages.length < this.state.messages.length &&
+           this.state.messages[this.state.messages.length - 1].sender === 'me') {
            setTimeout(() =>
                    this.setState({
                        messages: [ ...this.state.messages, {text: 'Не приставай ко мне, я робот!', sender: 'bot'} ] }),
