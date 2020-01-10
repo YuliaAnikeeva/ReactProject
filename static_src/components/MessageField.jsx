@@ -1,72 +1,97 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import { TextField, FloatingActionButton } from 'material-ui';
 import SendIcon from 'material-ui/svg-icons/content/send';
 import Message from './Message';
 import '../styles/styles.css';
 
 export default class MessageField extends React.Component {
-   state = {
-       messages: [{ text: "Привет!", sender: 'bot' }, { text: "Как дела?", sender: 'bot' }],
-       input: '',
-   };
+   static propTypes = {
+    chatId: PropTypes.number.isRequired,
+};
 
-   textInput = React.createRef();
+state = {
+    chats: {
+        1: {title: 'Чат 1', messageList: [1]},
+        2: {title: 'Чат 2', messageList: [2]},
+        3: {title: 'Чат 3', messageList: []},
+    },
+    messages: {
+        1: { text: "Привет!", sender: 'bot' },
+        2: { text: "Здравствуйте!", sender: 'bot' },
+    },
+    input: '',
+};
 
-   // Ставим фокус на <TextInput> при монтировании компонента
-   componentDidMount() {
-       this.textInput.current.focus();
-   }
+componentDidUpdate(prevProps, prevState) {
+    const { messages } = this.state;
+    if (Object.keys(prevState.messages).length < Object.keys(messages).length &&
+        Object.values(messages)[Object.values(messages).length - 1].sender === 'me') {
+        setTimeout(() =>
+            this.handleSendMessage('Не приставай ко мне, я робот!', 'bot'), 1000);
+    }
+}
 
-   componentDidUpdate(prevProps, prevState) {
-       if (prevState.messages.length < this.state.messages.length &&
-           this.state.messages[this.state.messages.length - 1].sender === 'me') {
-           setTimeout(() =>
-                   this.setState({
-                       messages: [ ...this.state.messages, {text: 'Не приставай ко мне, я робот!', sender: 'bot'} ] }),
-               1000);
-       }
-   }
+handleSendMessage = (message, sender) => {
+    const { messages, chats, input } = this.state;
+    const { chatId } = this.props;
 
-   handleSendMessage = () => {
-       this.setState({
-           messages: [ ...this.state.messages, {text: this.state.input, sender: 'me'} ],
-           input: '',
-       });
-   };
+    if (input.length > 0 || sender === 'bot') {
+        const messageId = Object.keys(messages).length + 1;
+        this.setState({
+            messages: {...messages,
+                [messageId]: {text: message, sender: sender}},
+            chats: {...chats,
+                [chatId]: { ...chats[chatId],
+                    messageList: [...chats[chatId]['messageList'], messageId]
+                }
+            },
+        })
+    }
+    if (sender === 'me') {
+        this.setState({ input: '' })
+    }
+};
 
-   handleInput = (e) => {
-       this.setState({ [e.target.name]: e.target.value })
-   };
+handleChange = (event) => {
+    this.setState({ [event.target.name]: event.target.value });
+};
+handleKeyUp = (event) => {
+    if (event.keyCode === 13) { // Enter
+        this.handleSendMessage(this.state.input, 'me')
+    }
+};
 
-   handleKeyUp = (e) => {
-       if (e.keyCode === 13) {  // Enter
-           this.handleSendMessage()
-       }
-   };
+render() {
+    const { messages, chats } = this.state;
+    const { chatId } = this.props;
 
-   render() {
-       const messageElements = this.state.messages.map((message, index) => (
-           <Message key={ index } text={ message.text } sender={ message.sender } />));
+    const messageElements = chats[chatId].messageList.map((messageId, index) => (
+        <Message
+            key={ index }
+            text={ messages[messageId].text }
+            sender={ messages[messageId].sender }
+        />));
 
-       return <div className="layout">
-           <div className="message-field">
-               { messageElements }
-               <div style={ { width: '100%', display: 'flex' } }>
-                   <TextField
-                       name="input"
-                       ref={ this.textInput }
-                       fullWidth={ true }
-                       hintText="Введите сообщение"
-                       style={ { fontSize: '22px' } }
-                       onChange={ this.handleInput }
-                       value={ this.state.input }
-                       onKeyUp={ this.handleKeyUp }
-                   />
-                   <FloatingActionButton onClick={ this.handleSendMessage }>
-                       <SendIcon />
-                   </FloatingActionButton>
-               </div>
-           </div>
-       </div>
-   }
+    return [
+        <div key='messageElements' className="message-field">
+            { messageElements }
+        </div>,
+        <div key='textInput' style={ { width: '100%', display: 'flex' } }>
+            <TextField
+                name="input"
+                fullWidth={ true }
+                hintText="Введите сообщение"
+                style={ { fontSize: '22px' } }
+                onChange={ this.handleChange }
+                value={ this.state.input }
+                onKeyUp={ this.handleKeyUp }
+            />
+            <FloatingActionButton
+                onClick={ () => this.handleSendMessage(this.state.input, 'me') }>
+                <SendIcon />
+            </FloatingActionButton>
+        </div>
+    ]
+}
 }

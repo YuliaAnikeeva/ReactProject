@@ -48,4 +48,6 @@ resolve: {
         index: 'index.html'
     }
  },
+ devtool: 'cheap-inline-module-source-map',
+
 }
