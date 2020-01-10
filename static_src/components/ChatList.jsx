@@ -40,8 +40,7 @@ export default class ChatList extends React.Component {
            <Link key={ chatId } to={ `/chat/${chatId}` }>
                <ListItem
                    primaryText={ chats[chatId].title }
-                   leftIcon={ <ContentSend /> }
-               />
+                   leftIcon={ <ContentSend /> } />
            </Link>));
 
        return (
