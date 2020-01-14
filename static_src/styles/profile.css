@@ -1,0 +1,12 @@
+.profile {
+    margin: 30px;
+    padding: 20px;
+    width: fit-content;
+    background-color: lightpink;
+    border: 2px solid grey;
+    color: darkgrey;
+}
+
+.profile h1 {
+    font-size: 18px;
+}

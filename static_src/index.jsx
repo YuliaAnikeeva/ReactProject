@@ -1,11 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Router from './conponents/Router'
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Layout from './components/Layout'
+import initStore from './utils/store';
+
+
 
 ReactDOM.render(
-    <MuiThemeProvider>
-        <Layout />
-    </MuiThemeProvider>,
+   <Provider store={ initStore() }>
+       <BrowserRouter>
+           <MuiThemeProvider>
+               <Router />
+           </MuiThemeProvider>
+       </BrowserRouter>
+   </Provider>,
    document.getElementById('root'),
 );
