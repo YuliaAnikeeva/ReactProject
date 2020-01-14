@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { Link } from 'react-router-dom';
 import Avatar from 'material-ui/svg-icons/action/account-circle';
+import Profile from './Profile';
 
 export default class Header extends React.Component {
    static propTypes = {
